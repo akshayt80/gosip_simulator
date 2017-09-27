@@ -12,7 +12,9 @@ defmodule Project2 do
       :world
 
   """
-  def hello do
-    :world
+  def main(args) do
+      {_, _, _} = OptionParser.parse(args)
+      IO.puts "Building mesh topology"
+      Mesh.build()
   end
 end
