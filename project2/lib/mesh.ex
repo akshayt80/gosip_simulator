@@ -1,11 +1,11 @@
 defmodule Mesh do
-    def build (nodes \\ 3) do
+    def build (nodes \\ 100) do
         IO.puts "Creating actors"
         actors = initialize(nodes)
         # Selecting the first actor as initiator
         [initiator | tail] = actors
         start_time = System.system_time / 1000000000
-        IO.puts "Start time of mesh: #{start_time}"
+        IO.puts "Start time of mesh: #{start_time} initiating with: #{inspect(initiator)}"
         intiate(initiator)
         node_count = length(actors)
         listen(node_count)
@@ -28,14 +28,13 @@ defmodule Mesh do
         send initiator, {:initiate, "Start rumor"}
     end
     defp listen(node_count) do
-        node_count = receive do
+        IO.puts "Current node count: #{node_count}"
+        for n <- 1..node_count do
+            receive do
                 {:terminating, from, reason} -> IO.inspect from, label: "Actor terminating reason: #{reason}"
-                    node_count - 1
                 # code
+            end
         end
-        listen(node_count)
-    end
-    defp listen(0) do
-        :ok
+        #listen(node_count)
     end
 end
