@@ -13,8 +13,9 @@ defmodule Project2 do
 
   """
   def main(args) do
-      {_, _, _} = OptionParser.parse(args)
+      {_, [str], _} = OptionParser.parse(args)
       IO.puts "Building mesh topology"
-      Mesh.build()
+      nodes = elem(Integer.parse(str), 0)
+      Mesh.build(nodes)
   end
 end
