@@ -6,7 +6,7 @@ defmodule Mesh do
         [initiator | tail] = actors
         start_time = System.system_time / 1000000000
         IO.puts "Start time of mesh: #{start_time} initiating with: #{inspect(initiator)}"
-        intiate(initiator)
+        initiate(initiator)
         node_count = length(actors)
         #listen(actors)
         listen(node_count)
@@ -25,7 +25,7 @@ defmodule Mesh do
             send n, {:neighbours, actors}
         end
     end
-    defp intiate(initiator) do
+    defp initiate(initiator) do
         send initiator, {:initiate, "Start rumor"}
     end
     defp listen(node_count) do
