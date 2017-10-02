@@ -1,7 +1,7 @@
 defmodule Mesh do
-    def build (nodes \\ 100) do
+    def build (nodes \\ 100, algo \\ :pushsum) do
         IO.puts "Creating actors"
-        actors = initialize(nodes)
+        actors = initialize(nodes, algo)
         # Selecting the first actor as initiator
         [initiator | tail] = actors
         start_time = System.system_time / 1000000000
@@ -13,9 +13,13 @@ defmodule Mesh do
         time_consumed = (System.system_time / 1000000000) - start_time
         IO.puts "Convergence time: #{time_consumed} nodes count: #{node_count}"
     end
-    defp initialize(nodes) do
+    defp initialize(nodes, algo) do
         parent = self()
-        actors = for n <- 1..nodes, do: spawn fn -> Gossip.start(parent) end
+        if algo == :pushsum do
+            actors = for n <- 1..nodes, do: spawn fn -> PushSum.start(parent) end
+        else
+            actors = for n <- 1..nodes, do: spawn fn -> Gossip.start(parent) end
+        end
         send_neigbours(actors)
         actors
     end
