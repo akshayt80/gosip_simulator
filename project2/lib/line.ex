@@ -26,6 +26,7 @@ defmodule Line do
         first = List.first actors
         second = Enum.at actors, 1
         send_neigbours(first, [second])
+        #TODO:- test this neighbour part nicely. current onw won't work with 9 elements
         chunks = Enum.chunk_every(actors, 3, 1)
         for chunk <- chunks do
             IO.puts "length of chunk: #{length(chunk)}"
