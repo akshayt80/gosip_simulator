@@ -1,5 +1,5 @@
 defmodule Mesh do
-    def build (nodes \\ 100, algo \\ :pushsum) do
+    def build(nodes \\ 100, algo \\ :pushsum) do
         IO.puts "Creating actors"
         actors = initialize(nodes, algo)
         # Selecting the first actor as initiator
