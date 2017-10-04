@@ -19,10 +19,33 @@ defmodule Neigbors do
                 end
                 # merge the neighbors
                 complete_neighbors = List.flatten(hneighbours, vneighbours)
+                #neighbour_count = length(complete_neighbors)
+                complete_neighbors = get_random_neighbor(actors, complete_neighbors) #get_random_neighbor(actors, complete_neighbors, neighbour_count, neighbour_count+1)
                 IO.puts "elem: #{inspect(elem)} neighbours: #{inspect(complete_neighbors)}"
             end
         end
     end
+    defp get_random_neighbor(actors, complete_neighbors) do
+        random_neighbor = Enum.take_random(actors, 1)
+        # check to not add an element again
+        if not(Enum.member?(complete_neighbors, random_neighbor)) do
+            complete_neighbors = complete_neighbors ++ random_neighbor
+        end
+        complete_neighbors
+    end
+    # defp get_random_neighbor(actors, complete_neighbors, neighbour_count, required_count)
+    #                                             when neighbour_count == required_count do
+    #     complete_neighbors
+    # end
+    # defp get_random_neighbor(actors, complete_neighbors, neighbour_count, required_count) do
+    #     random_neighbor = Enum.take_random(actors, 1)
+    #     if not(Enum.member?(complete_neighbors, random_neighbor)) do
+    #        complete_neighbors = List.flatten(complete_neighbors, [random_neighbor]) 
+    #     end
+    #     neighbour_count = length(complete_neighbors)
+    #     IO.puts "neighbour_count: #{neighbour_count}, required_count: #{required_count}"
+    #     get_random_neighbor(actors, complete_neighbors, neighbour_count, required_count)
+    # end
 end
 l = for n <- 1..16, do: spawn fn -> 1+2 end
 chunk = Enum.chunk_every(l, 4)
