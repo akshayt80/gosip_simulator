@@ -13,10 +13,18 @@ defmodule Project2 do
 
   """
   def main(args) do
-      {_, [str], _} = OptionParser.parse(args)
+      {_, [nodes, algo, topology], _} = OptionParser.parse(args)
       #IO.puts "Building mesh topology"
-      nodes = elem(Integer.parse(str), 0)
-      #Mesh.build(nodes)
-      Line.build(nodes)
+      IO.puts "command line arguments: #{inspect(nodes)}"
+      nodes = elem(Integer.parse(nodes), 0)
+      IO.puts "algo selected: #{algo} topology: #{topology}"
+      case algo do
+          "full" -> Mesh.build(nodes, :"#{topology}")
+          "line" -> Line.build(nodes, :"#{topology}")
+          "imp2d" -> Imp2d.build(nodes, :"#{topology}")
+          "2d" -> IO.puts "Not yet implemented"
+      end
+      #
+      #Line.build(nodes)
   end
 end
