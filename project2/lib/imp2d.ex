@@ -60,11 +60,10 @@ defmodule Imp2d do
         end
     end
     defp get_random_neighbor(actors, complete_neighbors) do
-        random_neighbor = Enum.take_random(actors, 1)
+        [random_neighbor] = Enum.take_random(actors, 1)
         # check to not add an element again
-        # TODO :- fix the issue where a duplicate pid is added to the list
         if not(Enum.member?(complete_neighbors, random_neighbor)) do
-            complete_neighbors = complete_neighbors ++ random_neighbor
+            complete_neighbors = complete_neighbors ++ [random_neighbor]
         else
             IO.puts "XXX  random is already a part of the neighbors"
         end
