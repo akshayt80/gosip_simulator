@@ -63,7 +63,7 @@ defmodule PushSum do
         end
         {s, w, ratio}
     end
-    defp get_random_neighbours(neighbours, number \\ 10) do
+    defp get_random_neighbours(neighbours, number \\ 1) do
         Enum.take_random(neighbours, number)
     end
     defp terminate(parent) do
