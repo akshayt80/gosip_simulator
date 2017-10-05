@@ -1,4 +1,4 @@
-defmodule Project2 do
+defmodule Project2Bonus do
   @moduledoc """
   Documentation for Project2.
   """
