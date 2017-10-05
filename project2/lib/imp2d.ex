@@ -1,5 +1,5 @@
 defmodule Imp2d do
-    def build(nodes \\ 100, algo \\ :pushsum) do
+    def build(nodes \\ 100, algo \\ :gossip) do
         IO.puts "Creating actors"
         actors = initialize(nodes, algo)
         [initiator | tail] = actors
@@ -15,12 +15,13 @@ defmodule Imp2d do
     defp initialize(nodes, algo) do
         parent = self()
         {node_count, count_per_row} = required_node_count(nodes)
-        if algo == :pushsum do
-            actors = for n <- 1..node_count, do: spawn fn -> PushSum.start(parent) end
+        if algo == :gossip do
+            IO.puts "Starting gossip"
+            actors = for n <- 1..node_count, do: spawn fn -> Gossip.start(parent) end
         else
-            actors = for n <- 1..node_count, do: spawn fn -> Gossip.start(parent) end 
+            IO.puts "Starting push sum"
+            actors = for n <- 1..node_count, do: spawn fn -> PushSum.start(parent) end
         end
-        #send_neigbours(actors)
         chunks = Enum.chunk_every(actors, count_per_row)
         assign_neighbors(actors, chunks, count_per_row)
         actors

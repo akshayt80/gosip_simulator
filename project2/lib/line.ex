@@ -1,5 +1,5 @@
 defmodule Line do
-    def build(nodes \\ 100, algo \\ :pushsum) do
+    def build(nodes \\ 100, algo \\ :gossip) do
         IO.puts "Creating actors"
         {actors, initiator} = initialize(nodes, algo)
         start_time = System.system_time / 1000000000
@@ -13,11 +13,12 @@ defmodule Line do
     end
     defp initialize(nodes, algo) do
         parent = self()
-        if algo == :pushsum do
+        if algo == :gossip do
+            IO.puts "Staring gossip"
+            actors = for n <- 1..nodes, do: spawn fn -> Gossip.start(parent) end
+        else
             IO.puts "Staring push sum"
             actors = for n <- 1..nodes, do: spawn fn -> PushSum.start(parent) end
-        else
-            actors = for n <- 1..nodes, do: spawn fn -> Gossip.start(parent) end
         end
         initiator = assign_neighbours(actors)
         {actors, initiator}
