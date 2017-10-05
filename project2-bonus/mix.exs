@@ -27,6 +27,6 @@ defmodule Project2.Mixfile do
     ]
   end
   defp escript_config do
-    [main_module: Project2]
+    [main_module: Project2Bonus]
   end
 end
