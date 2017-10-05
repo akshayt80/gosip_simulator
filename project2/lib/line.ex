@@ -39,7 +39,7 @@ defmodule Line do
                 send_neigbours(actor, [left])
             end
         end
-        first
+        Enum.random(actors)
     end
     defp send_neigbours(actor, neighbours) do
         IO.inspect actor, label: "sending neighbours to"
