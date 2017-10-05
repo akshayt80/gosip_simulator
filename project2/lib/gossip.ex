@@ -3,35 +3,39 @@ defmodule Gossip do
         neighbours = []
         rumor_count = 0
         send_msg_pid = 0
-        listen(neighbours, rumor_count, parent, send_msg_pid)
+        neighbour_count = 0
+        listen(neighbours, rumor_count, parent, neighbour_count, send_msg_pid)
     end
-    defp listen(neighbours, rumor_count, parent, send_msg_pid, terminated \\ false) do
+    defp listen(neighbours, rumor_count, parent, send_msg_pid, neighbour_count, terminated \\ false) do
         #IO.puts "start listening: #{inspect(self())}"
         receive do
-            {:neighbours, neighbour_list} -> neighbours = set_neighbours(neighbour_list)
+            {:neighbours, neighbour_list} -> {neighbours, neighbour_count} = set_neighbours(neighbour_list)
                 IO.inspect neighbours, label: "Registered neighbours"
-            {:rumor, from, message} -> {rumor_count, neighbours, terminated, send_msg_pid} = handle_rumors(message, rumor_count, neighbours, from, parent, send_msg_pid, terminated)
-            {:initiate, value} -> neighbours = send_rumor("secret message", neighbours)
+            {:rumor, from, message} -> {rumor_count, neighbours, terminated, send_msg_pid} = handle_rumors(message, rumor_count, neighbours, from, parent, send_msg_pid, neighbour_count, terminated)
+            {:initiate, value} -> {neighbours, neighbour_count} = send_rumor("secret message", neighbours, neighbour_count)
         after
-            100 -> check_active_neighbours(neighbours, parent, send_msg_pid)
+            100 -> neighbour_count = check_active_neighbours(neighbours, parent, send_msg_pid, neighbour_count)
         end
-        listen(neighbours, rumor_count, parent, send_msg_pid, terminated)
+        listen(neighbours, rumor_count, parent, send_msg_pid, neighbour_count, terminated)
     end
-    defp check_active_neighbours(neighbours, parent, send_msg_pid) do
+    defp check_active_neighbours(neighbours, parent, send_msg_pid, neighbour_count) do
         # make sure that the initialization of the node is done
         # as  after initialization it will have non zero neigbours
         if length(neighbours) != 0 do
-            {recipients, neighbours} = get_active_neighbours(neighbours, MapSet.new, 0, 1, length(neighbours))
+            {recipients, neighbours, neighbour_count} = get_active_neighbours(neighbours, MapSet.new, 0, 1, neighbour_count)
             if neighbours == [] do
                 #IO.puts "No active neighbours left: #{inspect(self())}"
                 terminate(parent, send_msg_pid)
             end
         end
+        neighbour_count
     end
     defp set_neighbours(neighbours) do
-        List.delete(neighbours, self())
+        neighbours = List.delete(neighbours, self())
+        neighbour_count = length(neighbours)
+        {neighbours, neighbour_count}
     end
-    defp handle_rumors(message, count, neighbours, from, parent, send_msg_pid, terminated \\ false, terminate_count \\ 10) do
+    defp handle_rumors(message, count, neighbours, from, parent, send_msg_pid, neighbour_count, terminated \\ false, terminate_count \\ 10) do
         #IO.puts "Received rumor from: #{inspect(from)} to: #{inspect(self())}"
         count = count + 1
         #IO.puts "pid= #{inspect(self())} count= #{count} terminate_count= #{terminate_count}"
@@ -52,28 +56,28 @@ defmodule Gossip do
             # end
             if send_msg_pid == 0 do
                 IO.puts "Assigning send_msg_pid: #{inspect(self())}"
-                send_msg_pid = spawn fn -> continuously_send_rumor(message, neighbours) end
+                send_msg_pid = spawn fn -> continuously_send_rumor(message, neighbours, neighbour_count) end
             end
         end
         {count, neighbours, terminated, send_msg_pid}
     end
-    defp continuously_send_rumor(message, neighbours) do
-        send_rumor(message, neighbours)
+    defp continuously_send_rumor(message, neighbours, neighbour_count) do
+        {neighbours, neighbour_count} = send_rumor(message, neighbours, neighbour_count)
         # sleep
         :timer.sleep(50)
-        continuously_send_rumor(message, neighbours)
+        continuously_send_rumor(message, neighbours, neighbour_count)
     end
-    defp send_rumor(message, neighbours, stop_count \\ 1) do
+    defp send_rumor(message, neighbours, neighbour_count, stop_count \\ 1) do
         # Testing to not kill nodes after n
         #recipients = get_random_neighbours(neighbours)
         #TODO:- active recipient always goes through all the neigbours to select an active one
         #IO.puts "Looking for recipients"
-        {recipients, neighbours} = get_active_neighbours(neighbours, MapSet.new, 0, stop_count, length(neighbours))
+        {recipients, neighbours, neighbour_count} = get_active_neighbours(neighbours, MapSet.new, 0, stop_count, neighbour_count)
         for recipient <- recipients do
             #IO.puts "sending rumor to: #{inspect(recipient)} from: #{inspect(self)}"
             send recipient, {:rumor, self(), message}
         end
-        neighbours
+        {neighbours, neighbour_count}
     end
     defp get_random_neighbours(neighbours, number \\ 1) do
         recipients = Enum.take_random(neighbours, number)
@@ -87,12 +91,12 @@ defmodule Gossip do
     # Following can be used in fault tolerance code
     defp get_active_neighbours(neighbours, act_recipients, size, stop_count, neighbour_count) when size == stop_count do
         #IO.puts "Recipients selected: #{inspect(act_recipients)}"
-        {act_recipients, neighbours}
+        {act_recipients, neighbours, neighbour_count}
     end
     # No more neighbors to be found
     defp get_active_neighbours(neighbours, act_recipients, size, stop_count, neighbour_count) when neighbours == [] do
         #IO.puts "neighbours exhausted"
-        {[], []}
+        {[], [], 0}
     end
     # stop_count is more than total number of current_neighbors
     # defp get_active_neighbours(neighbours, act_recipients, size, stop_count, neighbour_count) when size == neighbour_count do
