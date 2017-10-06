@@ -54,7 +54,9 @@ defmodule Imp2d do
                 # merge the neighbors
                 complete_neighbors = List.flatten(hneighbours, vneighbours)
                 # get some random neighbors
-                complete_neighbors = get_random_neighbor(actors, complete_neighbors)
+                if (rem(pos, 2) == 1) and (rem(cpos, 2) == 1) do
+                    complete_neighbors = get_random_neighbor(actors, complete_neighbors)
+                end
                 send_neigbours(elem, complete_neighbors)
                 IO.puts "elem: #{inspect(elem)} neighbours: #{inspect(complete_neighbors)}"
             end
