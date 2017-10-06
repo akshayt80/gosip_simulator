@@ -9,7 +9,7 @@ Team 3
 2. Akshay Singh Jetawat, UFID:22163183, akshayt80@ufl.edu,
 
 # What is Working:
-For Gossip Protocol:
+For Gossip Protocol: The Following table shows the time taken by the gossip protocol for different topologies for the number of nodes as shown in the table below. Also, all the time's in table are in Milli seconds.
 
 |Nodes |Full	|line	  |2d	  |Imperfect 2d|
 |------|------|-------|-----|------------|
