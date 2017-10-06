@@ -7,36 +7,40 @@ defmodule PushSum do
         {s, w} = {process_number, 1}
         ratio = 0.0
         ratio_count = 0
-        listen(neighbours, {s, w}, ratio, ratio_count, parent)
+        neighbour_count = 0
+        listen(neighbours, {s, w}, ratio, ratio_count, parent, neighbour_count)
     end
-    defp listen(neighbours, {s, w},ratio, ratio_count, parent, terminated \\ false) do
+    defp listen(neighbours, {s, w},ratio, ratio_count, parent, neighbour_count, terminated \\ false) do
         #IO.puts "start listening: #{inspect(self())}"
         receive do
-            {:neighbours, neighbour_list} -> neighbours = set_neighbours(neighbour_list)
+            {:neighbours, neighbour_list} -> {neighbours, neighbour_count} = set_neighbours(neighbour_list)
                 #IO.inspect neighbours, label: "Registered neighbours"
-            {:rumor, from, message} -> {s, w, ratio, ratio_count, terminated, neighbours} = handle_rumors(message, {s, w}, ratio, ratio_count, neighbours, from, parent, terminated)
-            {:initiate, value} -> {s, w, ratio, neighbours} = send_rumor({s, w}, neighbours)
+            {:rumor, from, message} -> {s, w, ratio, ratio_count, terminated, neighbours, neighbour_count} = handle_rumors(message, {s, w}, ratio, ratio_count, neighbours, from, parent, neighbour_count, terminated)
+            {:initiate, value} -> {s, w, ratio, neighbours, neighbour_count} = send_rumor({s, w}, neighbours, neighbour_count)
         after
-            100 -> check_active_neighbours(neighbours, parent)
+            100 -> neighbour_count = check_active_neighbours(neighbours, parent, neighbour_count)
         end
-        listen(neighbours, {s, w}, ratio, ratio_count, parent, terminated)
+        listen(neighbours, {s, w}, ratio, ratio_count, parent, neighbour_count, terminated)
     end
-    defp check_active_neighbours(neighbours, parent) do
+    defp check_active_neighbours(neighbours, parent, neighbour_count) do
         # make sure that the initialization of the node is done
         # as  after initialization it will have non zero neigbours
-        if length(neighbours) != 0 do
-            {recipients, neighbours} = get_active_neighbours(neighbours, MapSet.new, 0, length(neighbours))
+        if neighbour_count != 0 do
+            {recipients, neighbours, neighbour_count} = get_active_neighbours(neighbours, MapSet.new, 0, neighbour_count)
             IO.puts "self: #{inspect(self())} check active neighbours here"
             if neighbours == [] do
                 #IO.puts "No active neighbours left: #{inspect(self())}"
                 terminate(parent)
             end
         end
+        neighbour_count
     end
-    defp set_neighbours(neighbours) do
-        List.delete(neighbours, self())
+    defp set_neighbours(neighbors) do
+        neighbors = List.delete(neighbors, self())
+        neighbour_count = length(neighbors)
+        {neighbors, neighbour_count}
     end
-    defp handle_rumors(message, {s, w}, ratio, count, neighbours, from, parent, terminated \\ false, terminate_count \\ 3) do
+    defp handle_rumors(message, {s, w}, ratio, count, neighbours, from, parent, neighbour_count, terminated \\ false, terminate_count \\ 3) do
         {new_s, new_w} = message
         #IO.puts "Received rumor from: #{inspect(from)} to: #{inspect(self())} new_s: #{new_s} new_w: #{new_w} old_s: #{s} old_w: #{w}"
         new_ratio = new_s / new_w
@@ -51,8 +55,10 @@ defmodule PushSum do
         if change > 0.0000000001 do
             s = new_s + s
             w = new_w + w
+            # resetting count value
             count = 0
         else
+            # increasing count as ratio change was not significant
             count = count + 1
         end
         if count >=  terminate_count or terminated do
@@ -65,13 +71,14 @@ defmodule PushSum do
                 terminated = true
             end
         else
-            {s, w, ratio, neighbours} = send_rumor({s, w}, neighbours)
-            # send message to self
-            {s, w, ratio, neighbours} = send_rumor({s, w}, neighbours, true)
+            {s, w, ratio, neighbours, neighbour_count} = send_rumor({s, w}, neighbours, neighbour_count)
+            # send message to self for better convergence as described algorithm in paper:
+            # http://www.comp.nus.edu.sg/~ooibc/courses/cs6203/focs2003-gossip.pdf
+            {s, w, ratio, neighbours, neighbour_count} = send_rumor({s, w}, neighbours, neighbour_count, true)
         end
-        {s, w, ratio, count, terminated, neighbours}
+        {s, w, ratio, count, terminated, neighbours, neighbour_count}
     end
-    defp send_rumor({s, w}, neighbours, self \\ false) do
+    defp send_rumor({s, w}, neighbours, neighbour_count, self \\ false) do
         s = s / 2
         w = w / 2
         ratio = s / w
@@ -79,7 +86,7 @@ defmodule PushSum do
             recipients = [self()]
         else
             #recipients = get_random_neighbours(neighbours)
-            {recipients, neighbours} = get_active_neighbours(neighbours, MapSet.new, 0, length(neighbours))
+            {recipients, neighbours, neighbour_count} = get_active_neighbours(neighbours, MapSet.new, 0, neighbour_count)
             IO.puts "self: #{inspect(self())} send rumor here"
         end
         for recipient <- recipients do
@@ -87,7 +94,7 @@ defmodule PushSum do
             send recipient, {:rumor, self(), {s, w}}
         end
         #send self(), {:rumor, self(), {s, w}}
-        {s, w, ratio, neighbours}
+        {s, w, ratio, neighbours, neighbour_count}
     end
     defp get_random_neighbours(neighbours, number \\ 1) do
         Enum.take_random(neighbours, number)
@@ -95,12 +102,12 @@ defmodule PushSum do
     # Following can be used in fault tolerance code
     defp get_active_neighbours(neighbours, act_recipients, size, neighbour_count) when size == 1 do
         #IO.puts "Recipients selected: #{inspect(act_recipients)}"
-        {act_recipients, neighbours}
+        {act_recipients, neighbours, neighbour_count}
     end
     # No more neighbors to be found
     defp get_active_neighbours(neighbours, act_recipients, size, neighbour_count) when neighbours == [] do
         #IO.puts "neighbours exhausted"
-        {[], []}
+        {[], [], 0}
     end
     # stop_count is more than total number of current_neighbors
     # defp get_active_neighbours(neighbours, act_recipients, size, stop_count, neighbour_count) when size == neighbour_count do
