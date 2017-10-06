@@ -48,6 +48,8 @@ defmodule Gossip do
                 terminate(parent, send_msg_pid)
                 terminated = true
             end
+            # added to make the algorithm converge better
+            send_rumor(message, neighbours, neighbour_count)
         else
             # neighbours = send_rumor(message, neighbours)
             # if neighbours == [] do
@@ -118,7 +120,8 @@ defmodule Gossip do
     end
     defp terminate(parent, send_msg_pid \\ 0) do
         send parent, {:terminating, self(), :normal}
-        #Process.exit(send_msg_pid, :kill)
+        IO.puts "Killing process: #{inspect(send_msg_pid)} for #{inspect(self())}"
+        Process.exit(send_msg_pid, :kill)
         #IO.puts "Killing self: #{inspect(self())}"
         #Process.exit(self(), :normal)
     end
