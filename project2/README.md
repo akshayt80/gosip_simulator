@@ -9,7 +9,11 @@ Team 3
 2. Akshay Singh Jetawat, UFID:22163183, akshayt80@ufl.edu,
 
 # What is Working:
-For Gossip Protocol: The Following table shows the time taken by the gossip protocol for different topologies for the number of nodes as shown in the table below. Also, all the time's in table are in Milli seconds.
+
+Gossip Protocol: Each process in the network listens for gossips. When a rumor is heard by a process, it spreads it to other neighbor process in the network selected at random. The alignment of neighbor varies according to the underlying topology. 
+Each process in the topology maintains its own state which comprises of its neighbors, a count variable to store the number of rumors received so far i.e. every process has a count of how many times it has heard a rumor.Once a process receives a particular number of rumors, it sends the notification to its parents notifying about its completion and terminates.
+
+We experimented with different number of nodes with different topologies keeping the count of rumors to be constant in all the cases for the termination of a process. The time taken to achieve convergence (in ms) for different configurations is shown below:
 
 |Nodes |Full	|line	  |2d	  |Imperfect 2d|
 |------|------|-------|-----|------------|
