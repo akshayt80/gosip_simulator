@@ -13,8 +13,8 @@ defmodule Gossip do
                 IO.inspect neighbours, label: "Registered neighbours"
             {:rumor, from, message} -> {rumor_count, neighbours, terminated, send_msg_pid} = handle_rumors(message, rumor_count, neighbours, from, parent, send_msg_pid, neighbour_count, terminated)
             {:initiate, value} -> {neighbours, neighbour_count} = send_rumor("secret message", neighbours, neighbour_count)
-        # after
-        #     100 -> neighbour_count = check_active_neighbours(neighbours, parent, send_msg_pid, neighbour_count)
+        after
+            50 -> neighbour_count = check_active_neighbours(neighbours, parent, send_msg_pid, neighbour_count)
         end
         listen(neighbours, rumor_count, parent, send_msg_pid, neighbour_count, terminated)
     end
@@ -49,7 +49,7 @@ defmodule Gossip do
                 terminated = true
             end
             # added to make the algorithm converge better
-            send_rumor(message, neighbours, neighbour_count)
+            #send_rumor(message, neighbours, neighbour_count)
         else
             # neighbours = send_rumor(message, neighbours)
             # if neighbours == [] do
@@ -71,10 +71,10 @@ defmodule Gossip do
     end
     defp send_rumor(message, neighbours, neighbour_count, stop_count \\ 1) do
         # Testing to not kill nodes after n
-        recipients = get_random_neighbours(neighbours)
+        #recipients = get_random_neighbours(neighbours)
         #TODO:- active recipient always goes through all the neigbours to select an active one
         #IO.puts "Looking for recipients"
-        #{recipients, neighbours, neighbour_count} = get_active_neighbours(neighbours, MapSet.new, 0, stop_count, neighbour_count)
+        {recipients, neighbours, neighbour_count} = get_active_neighbours(neighbours, MapSet.new, 0, stop_count, neighbour_count)
         for recipient <- recipients do
             #IO.puts "sending rumor to: #{inspect(recipient)} from: #{inspect(self)}"
             send recipient, {:rumor, self(), message}
@@ -120,9 +120,9 @@ defmodule Gossip do
     end
     defp terminate(parent, send_msg_pid \\ 0) do
         send parent, {:terminating, self(), :normal}
-        IO.puts "Killing process: #{inspect(send_msg_pid)} for #{inspect(self())}"
-        Process.exit(send_msg_pid, :kill)
-        #IO.puts "Killing self: #{inspect(self())}"
-        #Process.exit(self(), :normal)
+        #IO.puts "Killing process: #{inspect(send_msg_pid)} for #{inspect(self())}"
+        #Process.exit(send_msg_pid, :kill)
+        IO.puts "Killing self: #{inspect(self())}"
+        Process.exit(self(), :normal)
     end
 end
