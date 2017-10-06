@@ -5,9 +5,12 @@ READ ME file for Distributed Operating Systems - Project 2, Due Date: 7th Octobe
 Group members:
 
 Team 3
+1. Anmol Khanna, UFID:65140549, anmolkhanna93@ufl.edu,
+2. Akshay Singh Jetawat, UFID:22163183, akshayt80@ufl.edu,
 
-1.Anmol Khanna, UFID:65140549, anmolkhanna93@ufl.edu,
-2.Akshay Singh Jetawat, UFID:22163183, akshayt80@ufl.edu
+# What is Working:
+
+# What is the largest network you managed to deal with for each type of network and the algorithm:
 
 ## Installation
 
