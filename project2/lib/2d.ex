@@ -3,13 +3,13 @@ defmodule P2D do
         IO.puts "Creating actors"
         actors = initialize(nodes, algo)
         [initiator | tail] = actors
-        start_time = System.system_time / 1000000000
+        start_time = :os.system_time(:millisecond)
         IO.puts "Start time of mesh: #{start_time} initiating with: #{inspect(initiator)}"
         initiate(initiator)
         node_count = length(actors)
         #listen(actors)
         listen(node_count)
-        time_consumed = (System.system_time / 1000000000) - start_time
+        time_consumed = :os.system_time(:millisecond) - start_time
         IO.puts "Convergence time: #{time_consumed} nodes count: #{node_count}"
     end
     defp initialize(nodes, algo) do

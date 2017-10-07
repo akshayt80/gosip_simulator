@@ -4,13 +4,13 @@ defmodule Line do
         {actors, initiator} = initialize(nodes, algo)
         node_count = length(actors)
         node_target = round(node_count * 0.9)
-        start_time = System.system_time / 1000000000
+        start_time = :os.system_time(:millisecond)
         IO.puts "Start time of mesh: #{start_time} initiating with: #{inspect(initiator)}"
         initiate(initiator)
         #listen(actors)
         #listen(node_count)
         listen(0, node_target)
-        time_consumed = (System.system_time / 1000000000) - start_time
+        time_consumed = :os.system_time(:millisecond) - start_time
         IO.puts "Convergence time: #{time_consumed} nodes count: #{node_count}"
     end
     defp initialize(nodes, algo) do
