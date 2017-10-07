@@ -17,8 +17,8 @@ defmodule PushSum do
                 #IO.inspect neighbours, label: "Registered neighbours"
             {:rumor, from, message} -> {s, w, ratio, ratio_count, terminated, neighbours, neighbour_count} = handle_rumors(message, {s, w}, ratio, ratio_count, neighbours, from, parent, neighbour_count, terminated)
             {:initiate, value} -> {s, w, ratio, neighbours, neighbour_count} = send_rumor({s, w}, neighbours, neighbour_count)
-        # after
-        #     100 -> {neighbours, neighbour_count} = check_active_neighbours(neighbours, parent, neighbour_count)
+        after
+            500 -> {neighbours, neighbour_count} = check_active_neighbours(neighbours, parent, neighbour_count)
         end
         listen(neighbours, {s, w}, ratio, ratio_count, parent, neighbour_count, terminated)
     end
@@ -59,23 +59,25 @@ defmodule PushSum do
             count = 0
         else
             # increasing count as ratio change was not significant
-            count = count + 1
+            if from != self() do
+                count = count + 1
+            end
         end
         if count >=  terminate_count or terminated do
             # Last message
             #send_rumor(message, neighbours)
             # TODO:- fix the bug that it keeps on sendung terminate to parent
             if not(terminated) do
-                #IO.puts "Terminating: #{inspect(self())} with s: #{s} w: #{w}"
+                IO.puts "Terminating: #{inspect(self())} with s: #{s} w: #{w}"
                 terminate(parent)
                 terminated = true
             end
-            {s, w, ratio, neighbours, neighbour_count} = send_rumor({s, w}, neighbours, neighbour_count)
+            #{s, w, ratio, neighbours, neighbour_count} = send_rumor({s, w}, neighbours, neighbour_count)
         else
             {s, w, ratio, neighbours, neighbour_count} = send_rumor({s, w}, neighbours, neighbour_count)
             # send message to self for better convergence as described algorithm in paper:
             # http://www.comp.nus.edu.sg/~ooibc/courses/cs6203/focs2003-gossip.pdf
-            #{s, w, ratio, neighbours, neighbour_count} = send_rumor({s, w}, neighbours, neighbour_count, true)
+            {s, w, ratio, neighbours, neighbour_count} = send_rumor({s, w}, neighbours, neighbour_count, true)
         end
         {s, w, ratio, count, terminated, neighbours, neighbour_count}
     end
@@ -132,6 +134,6 @@ defmodule PushSum do
     defp terminate(parent) do
         #IO.puts "Terminating: #{inspect(self())}"
         send parent, {:terminating, self(), :normal}
-        #Process.exit(self(), :normal)
+        Process.exit(self(), :normal)
     end    
 end
