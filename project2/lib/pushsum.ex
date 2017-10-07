@@ -75,7 +75,7 @@ defmodule PushSum do
             {s, w, ratio, neighbours, neighbour_count} = send_rumor({s, w}, neighbours, neighbour_count)
             # send message to self for better convergence as described algorithm in paper:
             # http://www.comp.nus.edu.sg/~ooibc/courses/cs6203/focs2003-gossip.pdf
-            {s, w, ratio, neighbours, neighbour_count} = send_rumor({s, w}, neighbours, neighbour_count, true)
+            #{s, w, ratio, neighbours, neighbour_count} = send_rumor({s, w}, neighbours, neighbour_count, true)
         end
         {s, w, ratio, count, terminated, neighbours, neighbour_count}
     end
