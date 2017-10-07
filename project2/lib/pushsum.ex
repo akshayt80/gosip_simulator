@@ -17,8 +17,8 @@ defmodule PushSum do
                 #IO.inspect neighbours, label: "Registered neighbours"
             {:rumor, from, message} -> {s, w, ratio, ratio_count, terminated, neighbours, neighbour_count} = handle_rumors(message, {s, w}, ratio, ratio_count, neighbours, from, parent, neighbour_count, terminated)
             {:initiate, value} -> {s, w, ratio, neighbours, neighbour_count} = send_rumor({s, w}, neighbours, neighbour_count)
-        after
-            100 -> {neighbours, neighbour_count} = check_active_neighbours(neighbours, parent, neighbour_count)
+        # after
+        #     100 -> {neighbours, neighbour_count} = check_active_neighbours(neighbours, parent, neighbour_count)
         end
         listen(neighbours, {s, w}, ratio, ratio_count, parent, neighbour_count, terminated)
     end
