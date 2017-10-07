@@ -25,6 +25,16 @@ We experimented with different number of nodes with different topologies keeping
 
 ![alt tag](https://github.com/akshayt80/gosip_simulator/blob/master/Gossip.png)
 
+TODO: Update the table below for PushSum and make a graph
+
+|Nodes |Full	|line	  |2d	  |Imperfect 2d|
+|------|------|-------|-----|------------|
+|50	   |703	  |2656	  |880  |773         | 
+|100	 |757	  |4595	  |1186	|927         |
+|500	 |1221	|13528	|1502	|998         |
+|1000	 |4463	|26890	|2060	|1038        |
+|1500	 |9413	|44329	|2479	|1223        |
+
 # What is the largest network you managed to deal with for each type of network and the algorithm:
 
 
