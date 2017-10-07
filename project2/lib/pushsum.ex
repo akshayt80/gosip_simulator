@@ -70,6 +70,7 @@ defmodule PushSum do
                 terminate(parent)
                 terminated = true
             end
+            {s, w, ratio, neighbours, neighbour_count} = send_rumor({s, w}, neighbours, neighbour_count)
         else
             {s, w, ratio, neighbours, neighbour_count} = send_rumor({s, w}, neighbours, neighbour_count)
             # send message to self for better convergence as described algorithm in paper:
@@ -131,6 +132,6 @@ defmodule PushSum do
     defp terminate(parent) do
         IO.puts "Terminating: #{inspect(self())}"
         send parent, {:terminating, self(), :normal}
-        Process.exit(self(), :normal)
+        #Process.exit(self(), :normal)
     end    
 end
