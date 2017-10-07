@@ -13,8 +13,8 @@ defmodule Gossip do
                 IO.inspect neighbours, label: "Registered neighbours"
             {:rumor, from, message} -> {rumor_count, neighbours, terminated, send_msg_pid} = handle_rumors(message, rumor_count, neighbours, from, parent, send_msg_pid, neighbour_count, terminated)
             {:initiate, value} -> {neighbours, neighbour_count} = send_rumor("secret message", neighbours, neighbour_count)
-        after
-            100 -> neighbour_count = check_active_neighbours(neighbours, parent, send_msg_pid, neighbour_count)
+        #after
+        #    5000 -> {neighbours, neighbour_count} = check_active_neighbours(neighbours, parent, send_msg_pid, neighbour_count)
         end
         listen(neighbours, rumor_count, parent, send_msg_pid, neighbour_count, terminated)
     end
@@ -24,11 +24,11 @@ defmodule Gossip do
         if length(neighbours) != 0 do
             {recipients, neighbours, neighbour_count} = get_active_neighbours(neighbours, MapSet.new, 0, 1, neighbour_count)
             if neighbours == [] do
-                #IO.puts "No active neighbours left: #{inspect(self())}"
+                IO.puts "No active neighbours left: #{inspect(self())}"
                 terminate(parent, send_msg_pid)
             end
         end
-        neighbour_count
+        {neighbours, neighbour_count}
     end
     defp set_neighbours(neighbours) do
         neighbours = List.delete(neighbours, self())
@@ -48,6 +48,8 @@ defmodule Gossip do
                 terminate(parent, send_msg_pid)
                 terminated = true
             end
+            # added to make the algorithm converge better
+            #send_rumor(message, neighbours, neighbour_count)
         else
             # neighbours = send_rumor(message, neighbours)
             # if neighbours == [] do
@@ -55,7 +57,7 @@ defmodule Gossip do
             #     terminate = true
             # end
             if send_msg_pid == 0 do
-                IO.puts "Assigning send_msg_pid: #{inspect(self())}"
+                #IO.puts "Assigning send_msg_pid: #{inspect(self())}"
                 send_msg_pid = spawn fn -> continuously_send_rumor(message, neighbours, neighbour_count) end
             end
         end
@@ -64,7 +66,7 @@ defmodule Gossip do
     defp continuously_send_rumor(message, neighbours, neighbour_count) do
         {neighbours, neighbour_count} = send_rumor(message, neighbours, neighbour_count)
         # sleep
-        :timer.sleep(50)
+        :timer.sleep(200)
         continuously_send_rumor(message, neighbours, neighbour_count)
     end
     defp send_rumor(message, neighbours, neighbour_count, stop_count \\ 1) do
@@ -104,7 +106,7 @@ defmodule Gossip do
     # end
     defp get_active_neighbours(neighbours, act_recipients, size, stop_count, neighbour_count) do
         neighbour = Enum.random(neighbours)
-        #IO.puts "neighbours: #{inspect(neighbours)} act_recipients: #{inspect(act_recipients)}"
+        #IO.puts "self: #{inspect(self())} neighbours: #{inspect(neighbours)} act_recipients: #{inspect(act_recipients)}"
         if Process.alive?(neighbour) do
             #IO.puts "Adding to active neighbours: #{inspect(neighbour)}"
             act_recipients = MapSet.put(act_recipients, neighbour)
@@ -118,7 +120,8 @@ defmodule Gossip do
     end
     defp terminate(parent, send_msg_pid \\ 0) do
         send parent, {:terminating, self(), :normal}
-        Process.exit(send_msg_pid, :kill)
+        #IO.puts "Killing process: #{inspect(send_msg_pid)} for #{inspect(self())}"
+        #Process.exit(send_msg_pid, :kill)
         #IO.puts "Killing self: #{inspect(self())}"
         Process.exit(self(), :normal)
     end
