@@ -18,7 +18,7 @@ defmodule PushSum do
             {:rumor, from, message} -> {s, w, ratio, ratio_count, terminated, neighbours, neighbour_count} = handle_rumors(message, {s, w}, ratio, ratio_count, neighbours, from, parent, neighbour_count, terminated)
             {:initiate, value} -> {s, w, ratio, neighbours, neighbour_count} = send_rumor({s, w}, neighbours, neighbour_count)
         after
-            500 -> {neighbours, neighbour_count} = check_active_neighbours(neighbours, parent, neighbour_count)
+            100 -> {neighbours, neighbour_count} = check_active_neighbours(neighbours, parent, neighbour_count)
         end
         listen(neighbours, {s, w}, ratio, ratio_count, parent, neighbour_count, terminated)
     end
@@ -27,7 +27,7 @@ defmodule PushSum do
         # as  after initialization it will have non zero neigbours
         if neighbour_count != 0 do
             {recipients, neighbours, neighbour_count} = get_active_neighbours(neighbours, MapSet.new, 0, neighbour_count)
-            #IO.puts "self: #{inspect(self())} check active neighbours here"
+            IO.puts "self: #{inspect(self())} check active neighbours here"
             if neighbours == [] do
                 #IO.puts "No active neighbours left: #{inspect(self())}"
                 terminate(parent)
@@ -52,38 +52,54 @@ defmodule PushSum do
         # end
         change = new_ratio - old_ratio
         
-        if change > 0.0000000001 do
-            s = new_s + s
-            w = new_w + w
-            # resetting count value
-            count = 0
+        # terminated removed and condition
+        if abs(change) > 0.0000000001 and from != self() do
+            # terminated if condition introduced
+            if not(terminated) do
+                s = new_s + s
+                w = new_w + w
+                # resetting count value
+                count = 0
+            end
         else
             # increasing count as ratio change was not significant
-            if from != self() do
-                count = count + 1
-            end
+            #if from != self() do
+            count = count + 1
+            #end
         end
         if count >=  terminate_count or terminated do
             # Last message
             #send_rumor(message, neighbours)
             # TODO:- fix the bug that it keeps on sendung terminate to parent
             if not(terminated) do
+                #{s, w, ratio, neighbours, neighbour_count} = send_rumor({s, w}, neighbours, neighbour_count)
                 IO.puts "Terminating: #{inspect(self())} with s: #{s} w: #{w}"
                 terminate(parent)
                 terminated = true
+            else
+                # terminated uncommented
+                {s, w, ratio, neighbours, neighbour_count} = send_rumor({s, w}, neighbours, neighbour_count, false, true, {new_s, new_w})
             end
-            #{s, w, ratio, neighbours, neighbour_count} = send_rumor({s, w}, neighbours, neighbour_count)
         else
-            {s, w, ratio, neighbours, neighbour_count} = send_rumor({s, w}, neighbours, neighbour_count)
+            #IO.puts "Sending to random node from: #{inspect(self())} s: #{s} w: #{w} ratio: #{old_ratio}"
+            {s, w, old_ratio, neighbours, neighbour_count} = send_rumor({s, w}, neighbours, neighbour_count)
             # send message to self for better convergence as described algorithm in paper:
             # http://www.comp.nus.edu.sg/~ooibc/courses/cs6203/focs2003-gossip.pdf
-            {s, w, ratio, neighbours, neighbour_count} = send_rumor({s, w}, neighbours, neighbour_count, true)
+            #IO.puts "Sending to self: #{inspect(self())} s: #{s} w: #{w} ratio: #{old_ratio}"
+            {s, w, old_ratio, neighbours, neighbour_count} = send_rumor({s, w}, neighbours, neighbour_count, true)
+            #IO.puts "After sending self: #{inspect(self())} s: #{s} w: #{w} ratio: #{old_ratio}"
+            #count = count + 1
         end
-        {s, w, ratio, count, terminated, neighbours, neighbour_count}
+        {s, w, old_ratio, count, terminated, neighbours, neighbour_count}
     end
-    defp send_rumor({s, w}, neighbours, neighbour_count, self \\ false) do
-        s = s / 2
-        w = w / 2
+    # terminated added terminated and {new_s, new_w}
+    defp send_rumor({s, w}, neighbours, neighbour_count, self \\ false, terminated \\ false, {new_s, new_w} \\ {0, 0}) do
+        # terminated if condition introduced
+        if not(terminated) do
+            s = s / 2
+            w = w / 2 
+        end
+        #IO.puts "self: #{inspect(self())} s: #{s} w: #{w}"
         ratio = s / w
         if self do
             recipients = [self()]
@@ -94,7 +110,15 @@ defmodule PushSum do
         end
         for recipient <- recipients do
             #IO.puts "sending rumor to: #{inspect(recipient)} from: #{inspect(self())} s: #{s} w: #{w}"
-            send recipient, {:rumor, self(), {s, w}}
+            if not(recipient == self()) do
+                IO.puts "sending rumor to: #{inspect(recipient)} from: #{inspect(self())} s: #{s} w: #{w} ratio: #{ratio}"
+            end
+            # trminated new send introduced
+            if terminated do
+              send recipient, {:rumor, self(), {new_s, new_w}}
+            else
+              send recipient, {:rumor, self(), {s, w}}
+            end
         end
         #send self(), {:rumor, self(), {s, w}}
         {s, w, ratio, neighbours, neighbour_count}
@@ -117,6 +141,7 @@ defmodule PushSum do
     #     {act_recipients, neighbours}
     # end
     defp get_active_neighbours(neighbours, act_recipients, size, neighbour_count) do
+        IO.puts "here"
         neighbour = Enum.random(neighbours)
         #IO.puts "self: #{inspect(self())} neighbours: #{inspect(neighbours)} act_recipients: #{inspect(act_recipients)}"
         if Process.alive?(neighbour) do
@@ -134,6 +159,6 @@ defmodule PushSum do
     defp terminate(parent) do
         #IO.puts "Terminating: #{inspect(self())}"
         send parent, {:terminating, self(), :normal}
-        Process.exit(self(), :normal)
+        #Process.exit(self(), :normal)
     end    
 end
