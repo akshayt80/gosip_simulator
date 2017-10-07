@@ -39,11 +39,6 @@ We experimented with different number of nodes with different topologies keeping
 |1500	 |9413	|44329	|2479	|1223        |
 
 TODO: Update the table below for PushSum and make a graph
-
-# What is the largest network you managed to deal with for each type of network and the algorithm:
-
-
-
 ## Installation
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed
