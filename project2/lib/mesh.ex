@@ -4,10 +4,11 @@ defmodule Mesh do
         actors = initialize(nodes, algo)
         # Selecting the first actor as initiator
         [initiator | tail] = actors
+        node_count = length(actors)
         start_time = System.system_time / 1000000000
         IO.puts "Start time of mesh: #{start_time} initiating with: #{inspect(initiator)}"
         initiate(initiator)
-        node_count = length(actors)
+        #node_count = length(actors)
         #listen(actors)
         listen(node_count)
         time_consumed = (System.system_time / 1000000000) - start_time
