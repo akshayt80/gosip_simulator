@@ -13,8 +13,8 @@ defmodule Gossip do
                 IO.inspect neighbours, label: "Registered neighbours"
             {:rumor, from, message} -> {rumor_count, neighbours, terminated, send_msg_pid} = handle_rumors(message, rumor_count, neighbours, from, parent, send_msg_pid, neighbour_count, terminated)
             {:initiate, value} -> {neighbours, neighbour_count} = send_rumor("secret message", neighbours, neighbour_count)
-        after
-            1000 -> {neighbours, neighbour_count} = check_active_neighbours(neighbours, parent, send_msg_pid, neighbour_count)
+        #after
+        #    5000 -> {neighbours, neighbour_count} = check_active_neighbours(neighbours, parent, send_msg_pid, neighbour_count)
         end
         listen(neighbours, rumor_count, parent, send_msg_pid, neighbour_count, terminated)
     end
@@ -122,7 +122,7 @@ defmodule Gossip do
         send parent, {:terminating, self(), :normal}
         #IO.puts "Killing process: #{inspect(send_msg_pid)} for #{inspect(self())}"
         #Process.exit(send_msg_pid, :kill)
-        IO.puts "Killing self: #{inspect(self())}"
+        #IO.puts "Killing self: #{inspect(self())}"
         Process.exit(self(), :normal)
     end
 end
