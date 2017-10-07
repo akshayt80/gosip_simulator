@@ -38,7 +38,7 @@ defmodule PushSum1 do
     defp handle_rumors({new_s, new_w}, {s, w}, old_ratio, count, neighbors, from, parent, neighbor_count, terminated \\ false, terminate_count \\ 2) do
         #IO.puts "Received rumor from: #{inspect(from)} to: #{inspect(self())} new_s: #{new_s} new_w: #{new_w} old_s: #{s} old_w: #{w}"
         if from != self() do
-            new_ratio = ((new_s + s)/2) / ((new_w + w)/2)
+            new_ratio = (new_s + (s/2)) / (new_w + (w/2))
             change = new_ratio - old_ratio
         end
         
@@ -61,15 +61,15 @@ defmodule PushSum1 do
                 terminated = true
             end
         else
-            IO.puts "before sending to random neighbor self: #{inspect(self())} s: #{s} w: #{w}"
+            #IO.puts "before sending to random neighbor self: #{inspect(self())} s: #{s} w: #{w}"
             {s, w, _, neighbors, neighbor_count} = send_rumor({s, w}, neighbors, neighbor_count)
             # send message to self for better convergence as described algorithm in paper:
             # http://www.comp.nus.edu.sg/~ooibc/courses/cs6203/focs2003-gossip.pdf
-            IO.puts "before sending to self: #{inspect(self())} s: #{s} w: #{w}"
+            #IO.puts "before sending to self: #{inspect(self())} s: #{s} w: #{w}"
             {_, _, _, neighbors, neighbor_count} = send_rumor({s, w}, neighbors, neighbor_count, true)
         end
         ratio = s / w
-        IO.puts "after sending to the nodes self: #{inspect(self())} s: #{s} w: #{w}"
+        #IO.puts "after sending to the nodes self: #{inspect(self())} s: #{s} w: #{w}"
         {s, w, ratio, count, terminated, neighbors, neighbor_count}
     end
     # terminated added terminated and {new_s, new_w}
