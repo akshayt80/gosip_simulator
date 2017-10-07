@@ -27,7 +27,7 @@ defmodule PushSum do
         # as  after initialization it will have non zero neigbours
         if neighbour_count != 0 do
             {recipients, neighbours, neighbour_count} = get_active_neighbours(neighbours, MapSet.new, 0, neighbour_count)
-            IO.puts "self: #{inspect(self())} check active neighbours here"
+            #IO.puts "self: #{inspect(self())} check active neighbours here"
             if neighbours == [] do
                 #IO.puts "No active neighbours left: #{inspect(self())}"
                 terminate(parent)
@@ -41,9 +41,9 @@ defmodule PushSum do
         {neighbors, neighbour_count}
     end
     defp handle_rumors({new_s, new_w}, {s, w}, old_ratio, count, neighbours, from, parent, neighbour_count, terminated \\ false, terminate_count \\ 3) do
-        IO.puts "Received rumor from: #{inspect(from)} to: #{inspect(self())} new_s: #{new_s} new_w: #{new_w} old_s: #{s} old_w: #{w}"
+        #IO.puts "Received rumor from: #{inspect(from)} to: #{inspect(self())} new_s: #{new_s} new_w: #{new_w} old_s: #{s} old_w: #{w}"
         new_ratio = (new_s + s) / (new_w + w)
-        IO.puts "New ratio: #{new_ratio}"
+        #IO.puts "New ratio: #{new_ratio}"
         # handle reduction in ratio
         # if new_ratio > ratio do
         #   change = new_ratio - ratio
@@ -66,7 +66,7 @@ defmodule PushSum do
             #send_rumor(message, neighbours)
             # TODO:- fix the bug that it keeps on sendung terminate to parent
             if not(terminated) do
-                IO.puts "Terminating: #{inspect(self())} with s: #{s} w: #{w}"
+                #IO.puts "Terminating: #{inspect(self())} with s: #{s} w: #{w}"
                 terminate(parent)
                 terminated = true
             end
@@ -91,7 +91,7 @@ defmodule PushSum do
             #IO.puts "self: #{inspect(self())} send rumor here"
         end
         for recipient <- recipients do
-            IO.puts "sending rumor to: #{inspect(recipient)} from: #{inspect(self())} s: #{s} w: #{w}"
+            #IO.puts "sending rumor to: #{inspect(recipient)} from: #{inspect(self())} s: #{s} w: #{w}"
             send recipient, {:rumor, self(), {s, w}}
         end
         #send self(), {:rumor, self(), {s, w}}
@@ -116,21 +116,21 @@ defmodule PushSum do
     # end
     defp get_active_neighbours(neighbours, act_recipients, size, neighbour_count) do
         neighbour = Enum.random(neighbours)
-        IO.puts "self: #{inspect(self())} neighbours: #{inspect(neighbours)} act_recipients: #{inspect(act_recipients)}"
+        #IO.puts "self: #{inspect(self())} neighbours: #{inspect(neighbours)} act_recipients: #{inspect(act_recipients)}"
         if Process.alive?(neighbour) do
-            IO.puts "Adding to active neighbours: #{inspect(neighbour)}"
+            #IO.puts "Adding to active neighbours: #{inspect(neighbour)}"
             act_recipients = MapSet.put(act_recipients, neighbour)
         else
-            IO.puts "Removing killed process: #{inspect(neighbour)} from: #{inspect(self)}"
+            #IO.puts "Removing killed process: #{inspect(neighbour)} from: #{inspect(self)}"
             neighbours = List.delete(neighbours, neighbour)
             neighbour_count = neighbour_count - 1
-            IO.puts "self: #{inspect(self())} left neighbours: #{inspect(neighbours)}"
+            #IO.puts "self: #{inspect(self())} left neighbours: #{inspect(neighbours)}"
         end
         size = MapSet.size(act_recipients)
         get_active_neighbours(neighbours, act_recipients, size, neighbour_count)
     end
     defp terminate(parent) do
-        IO.puts "Terminating: #{inspect(self())}"
+        #IO.puts "Terminating: #{inspect(self())}"
         send parent, {:terminating, self(), :normal}
         #Process.exit(self(), :normal)
     end    
