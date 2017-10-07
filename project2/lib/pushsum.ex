@@ -17,8 +17,8 @@ defmodule PushSum do
                 #IO.inspect neighbours, label: "Registered neighbours"
             {:rumor, from, message} -> {s, w, ratio, ratio_count, terminated, neighbours, neighbour_count} = handle_rumors(message, {s, w}, ratio, ratio_count, neighbours, from, parent, neighbour_count, terminated)
             {:initiate, value} -> {s, w, ratio, neighbours, neighbour_count} = send_rumor({s, w}, neighbours, neighbour_count)
-        # after
-        #     100 -> {neighbours, neighbour_count} = check_active_neighbours(neighbours, parent, neighbour_count)
+        after
+            100 -> {neighbours, neighbour_count} = check_active_neighbours(neighbours, parent, neighbour_count)
         end
         listen(neighbours, {s, w}, ratio, ratio_count, parent, neighbour_count, terminated)
     end
@@ -41,8 +41,9 @@ defmodule PushSum do
         {neighbors, neighbour_count}
     end
     defp handle_rumors({new_s, new_w}, {s, w}, old_ratio, count, neighbours, from, parent, neighbour_count, terminated \\ false, terminate_count \\ 3) do
-        #IO.puts "Received rumor from: #{inspect(from)} to: #{inspect(self())} new_s: #{new_s} new_w: #{new_w} old_s: #{s} old_w: #{w}"
+        IO.puts "Received rumor from: #{inspect(from)} to: #{inspect(self())} new_s: #{new_s} new_w: #{new_w} old_s: #{s} old_w: #{w}"
         new_ratio = (new_s + s) / (new_w + w)
+        IO.puts "New ratio: #{new_ratio}"
         # handle reduction in ratio
         # if new_ratio > ratio do
         #   change = new_ratio - ratio
@@ -89,7 +90,7 @@ defmodule PushSum do
             #IO.puts "self: #{inspect(self())} send rumor here"
         end
         for recipient <- recipients do
-            IO.puts "sending rumor to: #{inspect(recipient)} from: #{inspect(self)} s: #{s} w: #{w}"
+            IO.puts "sending rumor to: #{inspect(recipient)} from: #{inspect(self())} s: #{s} w: #{w}"
             send recipient, {:rumor, self(), {s, w}}
         end
         #send self(), {:rumor, self(), {s, w}}
