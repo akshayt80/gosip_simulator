@@ -52,7 +52,6 @@ defmodule PushSum do
         # end
         change = new_ratio - old_ratio
         
-        # terminated removed and condition
         if abs(change) > 0.0000000001 and from != self() do
             # terminated if condition introduced
             if not(terminated) do
@@ -97,7 +96,7 @@ defmodule PushSum do
         # terminated if condition introduced
         if not(terminated) do
             s = s / 2
-            w = w / 2 
+            w = w / 2
         end
         #IO.puts "self: #{inspect(self())} s: #{s} w: #{w}"
         ratio = s / w
