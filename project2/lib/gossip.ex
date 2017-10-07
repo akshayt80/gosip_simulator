@@ -66,7 +66,7 @@ defmodule Gossip do
     defp continuously_send_rumor(message, neighbours, neighbour_count) do
         {neighbours, neighbour_count} = send_rumor(message, neighbours, neighbour_count)
         # sleep
-        :timer.sleep(50)
+        :timer.sleep(200)
         continuously_send_rumor(message, neighbours, neighbour_count)
     end
     defp send_rumor(message, neighbours, neighbour_count, stop_count \\ 1) do
