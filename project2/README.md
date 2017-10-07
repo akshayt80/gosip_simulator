@@ -30,12 +30,6 @@ The Actor initiates the algorithm by sending a message to one of its randomly se
 
 We experimented with different number of nodes with different topologies keeping the count of rumors to be constant in all the cases for the termination of a process. The time taken to achieve convergence (in ms) for different configurations is shown below:
 
-#Largest Network Managed for each algorithm and topology:
-
-For Gossip:
-full: 4000
-
-
 |Nodes |Full	|line	  |2d	  |Imperfect 2d|
 |------|------|-------|-----|------------|
 |50	   |703	  |2656	  |880  |773         | 
@@ -45,6 +39,13 @@ full: 4000
 |1500	 |9413	|44329	|2479	|1223        |
 
 TODO: Update the table below for PushSum and make a graph
+
+
+# Largest Network Managed for each algorithm and topology:
+
+For Gossip:
+full: 4000
+
 ## Installation
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed
