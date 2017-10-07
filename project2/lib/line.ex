@@ -2,12 +2,14 @@ defmodule Line do
     def build(nodes \\ 100, algo \\ :gossip) do
         IO.puts "Creating actors"
         {actors, initiator} = initialize(nodes, algo)
+        node_count = length(actors)
+        node_target = round(node_count * 0.9)
         start_time = System.system_time / 1000000000
         IO.puts "Start time of mesh: #{start_time} initiating with: #{inspect(initiator)}"
         initiate(initiator)
-        node_count = length(actors)
         #listen(actors)
-        listen(node_count)
+        #listen(node_count)
+        listen(0, node_target)
         time_consumed = (System.system_time / 1000000000) - start_time
         IO.puts "Convergence time: #{time_consumed} nodes count: #{node_count}"
     end
@@ -48,14 +50,26 @@ defmodule Line do
     defp initiate(initiator) do
         send initiator, {:initiate, "Start rumor"}
     end
-    defp listen(node_count) do
-        IO.puts "Current node count: #{node_count}"
-        for n <- 1..node_count do
-            receive do
-                {:terminating, from, reason} -> :ok #IO.inspect from, label: "Actor terminating reason: #{reason}"
-                # code
-            end
-        end
-        #listen(node_count)
+    # checking if 90% of nodes have converged
+    defp listen(current_count, target_count) when target_count == current_count do
+        :ok
     end
+    defp listen(current_count, target_count) do
+        receive do
+            {:terminating, from, reason} -> :ok #IO.inspect from, label: "Actor terminating reason: #{reason}"
+            # code
+        end
+        current_count = current_count + 1
+        listen(current_count, target_count)
+    end
+    # defp listen(node_count) do
+    #     IO.puts "Current node count: #{node_count}"
+    #     for n <- 1..node_count do
+    #         receive do
+    #             {:terminating, from, reason} -> :ok #IO.inspect from, label: "Actor terminating reason: #{reason}"
+    #             # code
+    #         end
+    #     end
+    #     #listen(node_count)
+    # end
 end
