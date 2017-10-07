@@ -17,11 +17,11 @@ We experimented with different number of nodes with different topologies keeping
 
 |Nodes |Full	|line	  |2d	  |Imperfect 2d|
 |------|------|-------|-----|------------|
-|50	   |703	  |2656	  |880  |773         | 
-|100	 |757	  |4595	  |1186	|927         |
-|500	 |1221	|13528	|1502	|998         |
-|1000	 |4463	|26890	|2060	|1038        |
-|1500	 |9413	|44329	|2479	|1223        |
+|50	   |2219	|10656	|3823   |3823        |
+|100	 |2225	|15682	|4427	|3420        |
+|500	 |2586	|67340	|7443	|4426        |
+|1000	 |3266	|113572	|8852	|4830        |
+|1500	 |4072	|289448	|10863	|5233        |
 
 ![alt tag](https://github.com/akshayt80/gosip_simulator/blob/master/Gossip.png)
 
