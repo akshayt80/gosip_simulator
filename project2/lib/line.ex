@@ -20,7 +20,7 @@ defmodule Line do
             actors = for n <- 1..nodes, do: spawn fn -> Gossip.start(parent) end
         else
             IO.puts "Staring push sum"
-            actors = for n <- 1..nodes, do: spawn fn -> PushSum.start(parent) end
+            actors = for n <- 1..nodes, do: spawn fn -> PushSum1.start(parent) end
         end
         initiator = assign_neighbours(actors)
         {actors, initiator}
