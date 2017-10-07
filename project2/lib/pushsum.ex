@@ -110,7 +110,7 @@ defmodule PushSum do
         for recipient <- recipients do
             #IO.puts "sending rumor to: #{inspect(recipient)} from: #{inspect(self())} s: #{s} w: #{w}"
             if not(recipient == self()) do
-                IO.puts "sending rumor to: #{inspect(recipient)} from: #{inspect(self())} s: #{s} w: #{w} ratio: #{ratio}"
+                #IO.puts "sending rumor to: #{inspect(recipient)} from: #{inspect(self())} s: #{s} w: #{w} ratio: #{ratio}"
             end
             # trminated new send introduced
             if terminated do
