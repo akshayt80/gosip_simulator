@@ -38,7 +38,7 @@ We experimented with different number of nodes with different topologies keeping
 |40	   |395	  |   	  |43228|13029       |
 |50	   |507	  |   	  |57480|17300       |
 
-TODO: Update the table below for PushSum and make a graph
+![alt tag](https://github.com/akshayt80/gosip_simulator/blob/master/Picture1.png)
 
 # Largest Network Managed for each algorithm and topology.
 
