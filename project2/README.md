@@ -32,15 +32,17 @@ We experimented with different number of nodes with different topologies keeping
 
 |Nodes |Full	|line	  |2d	  |Imperfect 2d|
 |------|------|-------|-----|------------|
-|10	   |112	  |41422	  |1691  |1333         |
-|20	 |268	  |    	  |3128	|1699         |
-|30	 |329	|   	|9156	|3952         |
-|40	 |395	|   	|43228	|13029        |
-|50	 |507	|   	|57480	|17300        |
+|10	   |112	  |41422	|1691 |1333        |
+|20	   |268	  |    	  |3128 |1699        |
+|30	   |329   |   	  |9156	|3952        |
+|40	   |395	  |   	  |43228|13029       |
+|50	   |507	  |   	  |57480|17300       |
 
-TODO: Update the table below for PushSum and make a graph
+![alt tag](https://github.com/akshayt80/gosip_simulator/blob/master/Picture1.png)
 
-## Installation
+In the above graph, we have just taken a single reading for the line topology as we tried testing for other larger values of nodes, due to limited resources of our systems, those larger values were taking far too much of time.
+
+In conclusion, we have implemented all the topologies along with the pushsum and gossip algorithms. 
 
 # Largest Network Managed for each algorithm and topology.
 
@@ -58,10 +60,12 @@ For Gossip:
 
 For Push-Sum:
 -------------
-1. Line :
+1. Line :10
 2. Full: 50
 3. 2D: 50
 4. imp-2D: 50
+
+## Installation
 
 NOTE: The highest values are not recorded every time we run the program.
 
