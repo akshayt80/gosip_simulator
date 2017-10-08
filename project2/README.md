@@ -25,7 +25,10 @@ We experimented with different number of nodes with different topologies keeping
 
 ![alt tag](https://github.com/akshayt80/gosip_simulator/blob/master/Gossip.png)
 
-TODO: Update the table below for PushSum and make a graph
+PushSum Algorithm:
+The Actor initiates the algorithm by sending a message to one of its randomly selected neighboring processes. Each process maintains its own state to hold the process id's of its neighboring processes. This state depends upon the topology being used. We use s to represent the sum, w to store the weight and use the process id's of the parent process for notifying once the process is completed. In the input of the message, the s and w values of the received message are added to the initial s and w values of the process. Also, the total sum of all the process is constant. With every iteration of the process, the values of s and w keep on changing. The process is termintaed as follows, the receiver process calculates the difference between the s/w values and when the valus of the change goes below the threshold times, the process is terminated. Afte all the processes get terminated, the parent process gives the total time for the protocol and terminates.
+
+We experimented with different number of nodes with different topologies keeping the count of rumors to be constant in all the cases for the termination of a process. The time taken to achieve convergence (in ms) for different configurations is shown below:
 
 |Nodes |Full	|line	  |2d	  |Imperfect 2d|
 |------|------|-------|-----|------------|
@@ -35,11 +38,32 @@ TODO: Update the table below for PushSum and make a graph
 |1000	 |4463	|26890	|2060	|1038        |
 |1500	 |9413	|44329	|2479	|1223        |
 
-# What is the largest network you managed to deal with for each type of network and the algorithm:
-
-
+TODO: Update the table below for PushSum and make a graph
 
 ## Installation
+
+# Largest Network Managed for each algorithm and topology.
+
+This may vary significantly from machine to machine.
+
+On our systems, we got the following values:
+
+For Gossip:
+-----------
+
+1. Line:1500
+2. Full:3000
+3. 2D:5000
+4. Imp-2D:500
+
+For Push-Sum:
+-------------
+1. Line :
+2. Full: 
+3. 2D:
+4. imp-2D:
+
+NOTE: The highest values are not recorded every time we run the program.
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed
 by adding `project2` to your list of dependencies in `mix.exs`:
