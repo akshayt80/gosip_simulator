@@ -38,6 +38,8 @@ We experimented with different number of nodes with different topologies keeping
 |40	   |395	  |   	  |43228|13029       |
 |50	   |507	  |   	  |57480|17300       |
 
+- We have recorded only one value for line topology as it takes long to converge.
+
 ![alt tag](https://github.com/akshayt80/gosip_simulator/blob/master/Picture1.png)
 
 In the above graph, we have just taken a single reading for the line topology as we tried testing for other larger values of nodes, due to limited resources of our systems, those larger values were taking far too much of time.
