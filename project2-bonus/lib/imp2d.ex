@@ -1,15 +1,24 @@
 defmodule Imp2d do
-    def build(nodes \\ 100, algo \\ :gossip) do
+    def build(nodes, algo, node_percent, failure_type) do
         IO.puts "Creating actors"
         actors = initialize(nodes, algo)
         [initiator | tail] = actors
-        start_time = System.system_time / 1000000000
+        node_count = length(actors)
+        faulty_node_count = round(node_count * (node_percent / 100))
+        if failure_type == :node do
+            #node_count = node_count - faulty_node_count
+            spawn fn -> kill_nodes(tail, faulty_node_count) end
+        else
+            spawn fn -> kill_connection(tail, faulty_node_count) end
+        end
+        termination_count = round(node_count * 0.9)
+        start_time = :os.system_time(:millisecond)
         IO.puts "Start time of mesh: #{start_time} initiating with: #{inspect(initiator)}"
         initiate(initiator)
-        node_count = length(actors)
         #listen(actors)
         listen(node_count)
-        time_consumed = (System.system_time / 1000000000) - start_time
+        #listen(0, termination_count)
+        time_consumed = :os.system_time(:millisecond) - start_time
         IO.puts "Convergence time: #{time_consumed} nodes count: #{node_count}"
     end
     defp initialize(nodes, algo) do
@@ -17,10 +26,10 @@ defmodule Imp2d do
         {node_count, count_per_row} = required_node_count(nodes)
         if algo == :gossip do
             IO.puts "Starting gossip"
-            actors = for n <- 1..node_count, do: spawn fn -> Gossip.start(parent) end
+            actors = for _ <- 1..node_count, do: spawn fn -> Gossip.start(parent) end
         else
             IO.puts "Starting push sum"
-            actors = for n <- 1..node_count, do: spawn fn -> PushSum.start(parent) end
+            actors = for _ <- 1..node_count, do: spawn fn -> PushSum2.start(parent) end
         end
         chunks = Enum.chunk_every(actors, count_per_row)
         assign_neighbors(actors, chunks, count_per_row)
@@ -54,7 +63,9 @@ defmodule Imp2d do
                 # merge the neighbors
                 complete_neighbors = List.flatten(hneighbours, vneighbours)
                 # get some random neighbors
-                complete_neighbors = get_random_neighbor(actors, complete_neighbors)
+                if (rem(pos, 2) == 1) and (rem(cpos, 2) == 1) do
+                    complete_neighbors = get_random_neighbor(actors, complete_neighbors)
+                end
                 send_neigbours(elem, complete_neighbors)
                 IO.puts "elem: #{inspect(elem)} neighbours: #{inspect(complete_neighbors)}"
             end
@@ -77,9 +88,35 @@ defmodule Imp2d do
     defp initiate(initiator) do
         send initiator, {:initiate, "Start rumor"}
     end
+    defp kill_nodes(actors, faulty_node_count) do
+        for _ <- 1..faulty_node_count do
+            :timer.sleep(5)
+            recipient = Enum.random(actors)
+            send recipient, {:terminate, :normal}
+        end
+    end
+    defp kill_connection(actors, faulty_node_count) do
+        for _ <- 1..faulty_node_count do
+            :timer.sleep(5)
+            recipient = Enum.random(actors)
+            send recipient, {:faulty, :normal}
+        end
+    end
+    # checking if 90% of nodes have converged
+    # defp listen(current_count, target_count) when target_count == current_count do
+    #     :ok
+    # end
+    # defp listen(current_count, target_count) do
+    #     receive do
+    #         {:terminating, from, reason} -> :ok #IO.inspect from, label: "Actor terminating reason: #{reason}"
+    #         # code
+    #     end
+    #     current_count = current_count + 1
+    #     listen(current_count, target_count)
+    # end
     defp listen(node_count) do
         IO.puts "Current node count: #{node_count}"
-        for n <- 1..node_count do
+        for _ <- 1..node_count do
             receive do
                 {:terminating, from, reason} -> :ok #IO.inspect from, label: "Actor terminating reason: #{reason}"
                 # code
