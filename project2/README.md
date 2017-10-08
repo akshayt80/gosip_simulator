@@ -40,12 +40,6 @@ We experimented with different number of nodes with different topologies keeping
 
 TODO: Update the table below for PushSum and make a graph
 
-
-# Largest Network Managed for each algorithm and topology:
-
-For Gossip:
-full: 4000
-
 ## Installation
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed
