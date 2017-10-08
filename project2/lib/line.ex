@@ -8,8 +8,8 @@ defmodule Line do
         IO.puts "Start time of mesh: #{start_time} initiating with: #{inspect(initiator)}"
         initiate(initiator)
         #listen(actors)
-        listen(node_count)
-        #listen(0, node_target)
+        #listen(node_count)
+        listen(0, node_target)
         time_consumed = :os.system_time(:millisecond) - start_time
         IO.puts "Convergence time: #{time_consumed} nodes count: #{node_count}"
     end
@@ -51,17 +51,17 @@ defmodule Line do
         send initiator, {:initiate, "Start rumor"}
     end
     # checking if 90% of nodes have converged
-    # defp listen(current_count, target_count) when target_count == current_count do
-    #     :ok
-    # end
-    # defp listen(current_count, target_count) do
-    #     receive do
-    #         {:terminating, from, reason} -> :ok #IO.inspect from, label: "Actor terminating reason: #{reason}"
-    #         # code
-    #     end
-    #     current_count = current_count + 1
-    #     listen(current_count, target_count)
-    # end
+    defp listen(current_count, target_count) when target_count == current_count do
+        :ok
+    end
+    defp listen(current_count, target_count) do
+        receive do
+            {:terminating, from, reason} -> :ok #IO.inspect from, label: "Actor terminating reason: #{reason}"
+            # code
+        end
+        current_count = current_count + 1
+        listen(current_count, target_count)
+    end
     defp listen(node_count) do
         IO.puts "Current node count: #{node_count}"
         for n <- 1..node_count do
