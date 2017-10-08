@@ -13,6 +13,8 @@ defmodule Gossip do
                 IO.inspect neighbours, label: "Registered neighbours"
             {:rumor, from, message} -> {rumor_count, neighbours, terminated, send_msg_pid} = handle_rumors(message, rumor_count, neighbours, from, parent, send_msg_pid, neighbour_count, terminated)
             {:initiate, value} -> {neighbours, neighbour_count} = send_rumor("secret message", neighbours, neighbour_count)
+            {:faulty, _} -> {neighbours, neighbour_count} = remove_random_neighbor(neighbours, neighbour_count)
+            {:terminate, _} -> terminate(parent)
         #after
         #    5000 -> {neighbours, neighbour_count} = check_active_neighbours(neighbours, parent, send_msg_pid, neighbour_count)
         end
@@ -33,6 +35,12 @@ defmodule Gossip do
     defp set_neighbours(neighbours) do
         neighbours = List.delete(neighbours, self())
         neighbour_count = length(neighbours)
+        {neighbours, neighbour_count}
+    end
+    defp remove_random_neighbor(neighbours, neighbour_count) do
+        neighbour = Enum.random(neighbours)
+        neighbours = List.delete(neighbours, neighbour)
+        neighbour_count = neighbour_count - 1
         {neighbours, neighbour_count}
     end
     defp handle_rumors(message, count, neighbours, from, parent, send_msg_pid, neighbour_count, terminated \\ false, terminate_count \\ 10) do
