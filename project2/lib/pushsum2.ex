@@ -26,7 +26,7 @@ defmodule PushSum2 do
         end
         if ratio_list != nil and (length ratio_list) ==  3 do
             if !terminated do
-                IO.puts "self: #{inspect(self())} ratio_list: #{inspect(ratio_list)}"
+                #IO.puts "self: #{inspect(self())} ratio_list: #{inspect(ratio_list)}"
                 if abs((Enum.at(ratio_list, 1) - Enum.at(ratio_list, 0))) <= 0.0000000001 &&
                     abs((Enum.at(ratio_list, 2) - Enum.at(ratio_list, 1))) <= 0.0000000001 do
                     terminated = true
@@ -37,7 +37,7 @@ defmodule PushSum2 do
                 #     send_rumor({s, w}, neighbors, neighbor_count, true)
                 end
             else
-                :timer.sleep(100)
+                :timer.sleep(50)
                 {neighbors, neighbor_count} = send_rumor({s, w}, neighbors, neighbor_count)
             end 
         end
@@ -48,7 +48,7 @@ defmodule PushSum2 do
         # as  after initialization it will have non zero neighbors
         if neighbor_count != 0 do
             {_, neighbors, neighbor_count} = get_active_neighbors(neighbors, MapSet.new, 0, neighbor_count)
-            IO.puts "self: #{inspect(self())} check active neighbors here: #{inspect(neighbors)}"
+            #IO.puts "self: #{inspect(self())} check active neighbors here: #{inspect(neighbors)}"
             if neighbor_count == 0 do
                 #IO.puts "No active neighbors left: #{inspect(self())}"
                 terminate(parent)
@@ -62,7 +62,7 @@ defmodule PushSum2 do
         {neighbors, neighbor_count}
     end
     defp handle_rumors({new_s, new_w}, {s, w}, ratio_list, neighbors, from, parent, neighbor_count, terminated) do
-        IO.puts "Received rumor from: #{inspect(from)} to: #{inspect(self())} new_s: #{new_s} new_w: #{new_w} old_s: #{s} old_w: #{w}"
+        #IO.puts "Received rumor from: #{inspect(from)} to: #{inspect(self())} new_s: #{new_s} new_w: #{new_w} old_s: #{s} old_w: #{w}"
         s = new_s + s
         w = new_w + w
         {s, w, ratio_list} = handle_ratio(s, w, ratio_list)
@@ -90,7 +90,7 @@ defmodule PushSum2 do
             {recipients, neighbors, neighbor_count} = get_active_neighbors(neighbors, MapSet.new, 0, neighbor_count)
         end
         for recipient <- recipients do
-            IO.puts "self: #{inspect(self())} send to: #{inspect(recipient)} s: #{s} w: #{w}"
+            #IO.puts "self: #{inspect(self())} send to: #{inspect(recipient)} s: #{s} w: #{w}"
             send recipient, {:rumor, self(), {s, w}}
         end
         {neighbors, neighbor_count}
