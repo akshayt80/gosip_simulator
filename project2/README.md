@@ -40,6 +40,8 @@ We experimented with different number of nodes with different topologies keeping
 
 ![alt tag](https://github.com/akshayt80/gosip_simulator/blob/master/Picture1.png)
 
+In the above graph, we have just taken a single reading for the line topology as the rest of the node values were taking far too much time on our systems.
+
 # Largest Network Managed for each algorithm and topology.
 
 This may vary significantly from machine to machine.
