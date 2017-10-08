@@ -11,8 +11,8 @@ defmodule Mesh do
         initiate(initiator)
         #node_count = length(actors)
         #listen(actors)
-        #listen(node_count)
-        listen(0, termination_count)
+        listen(node_count)
+        #listen(0, termination_count)
         time_consumed = :os.system_time(:millisecond) - start_time
         IO.puts "Convergence time: #{time_consumed} nodes count: #{node_count}"
     end
@@ -23,7 +23,7 @@ defmodule Mesh do
             actors = for n <- 1..nodes, do: spawn fn -> Gossip.start(parent) end
         else
             IO.puts "Starting push-sum"
-            actors = for n <- 1..nodes, do: spawn fn -> PushSum1.start(parent) end
+            actors = for n <- 1..nodes, do: spawn fn -> PushSum2.start(parent) end
         end
         send_neigbours(actors)
         actors
@@ -38,27 +38,27 @@ defmodule Mesh do
         send initiator, {:initiate, "Start rumor"}
     end
     # checking if 90% of nodes have converged
-    defp listen(current_count, target_count) when target_count == current_count do
-        :ok
-    end
-    defp listen(current_count, target_count) do
-        receive do
-            {:terminating, from, reason} -> :ok #IO.inspect from, label: "Actor terminating reason: #{reason}"
-            # code
-        end
-        current_count = current_count + 1
-        listen(current_count, target_count)
-    end
-    # defp listen(node_count) do
-    #     IO.puts "Current node count: #{node_count}"
-    #     for n <- 1..node_count do
-    #         receive do
-    #             {:terminating, from, reason} -> :ok #IO.inspect from, label: "Actor terminating reason: #{reason}"
-    #             # code
-    #         end
-    #     end
-    #     #listen(node_count)
+    # defp listen(current_count, target_count) when target_count == current_count do
+    #     :ok
     # end
+    # defp listen(current_count, target_count) do
+    #     receive do
+    #         {:terminating, from, reason} -> :ok #IO.inspect from, label: "Actor terminating reason: #{reason}"
+    #         # code
+    #     end
+    #     current_count = current_count + 1
+    #     listen(current_count, target_count)
+    # end
+    defp listen(node_count) do
+        IO.puts "Current node count: #{node_count}"
+        for n <- 1..node_count do
+            receive do
+                {:terminating, from, reason} -> :ok #IO.inspect from, label: "Actor terminating reason: #{reason}"
+                # code
+            end
+        end
+        #listen(node_count)
+    end
     # defp listen(actors) when actors == [] do
     #     :ok
     # end
