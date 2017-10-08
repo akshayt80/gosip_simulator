@@ -60,7 +60,7 @@ For Gossip:
 
 For Push-Sum:
 -------------
-1. Line :
+1. Line :10
 2. Full: 50
 3. 2D: 50
 4. imp-2D: 50
