@@ -77,7 +77,7 @@ defmodule PushSum do
                 terminated = true
             else
                 # terminated uncommented
-                {s, w, ratio, neighbours, neighbour_count} = send_rumor({s, w}, neighbours, neighbour_count, false, true, {new_s, new_w})
+                #{s, w, ratio, neighbours, neighbour_count} = send_rumor({s, w}, neighbours, neighbour_count, false, true, {new_s, new_w})
             end
         else
             #IO.puts "Sending to random node from: #{inspect(self())} s: #{s} w: #{w} ratio: #{old_ratio}"
@@ -140,7 +140,7 @@ defmodule PushSum do
     #     {act_recipients, neighbours}
     # end
     defp get_active_neighbours(neighbours, act_recipients, size, neighbour_count) do
-        IO.puts "here"
+        #IO.puts "here"
         neighbour = Enum.random(neighbours)
         #IO.puts "self: #{inspect(self())} neighbours: #{inspect(neighbours)} act_recipients: #{inspect(act_recipients)}"
         if Process.alive?(neighbour) do
@@ -158,6 +158,6 @@ defmodule PushSum do
     defp terminate(parent) do
         #IO.puts "Terminating: #{inspect(self())}"
         send parent, {:terminating, self(), :normal}
-        #Process.exit(self(), :normal)
+        Process.exit(self(), :normal)
     end    
 end
