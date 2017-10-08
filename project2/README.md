@@ -42,6 +42,8 @@ We experimented with different number of nodes with different topologies keeping
 
 In the above graph, we have just taken a single reading for the line topology as the rest of the node values were taking far too much time on our systems.
 
+In conclusion, we have implemented all the topologies along with the pushsum and gossip algorithms. 
+
 # Largest Network Managed for each algorithm and topology.
 
 This may vary significantly from machine to machine.
