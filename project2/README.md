@@ -32,11 +32,11 @@ We experimented with different number of nodes with different topologies keeping
 
 |Nodes |Full	|line	  |2d	  |Imperfect 2d|
 |------|------|-------|-----|------------|
-|50	   |703	  |2656	  |880  |773         | 
-|100	 |757	  |4595	  |1186	|927         |
-|500	 |1221	|13528	|1502	|998         |
-|1000	 |4463	|26890	|2060	|1038        |
-|1500	 |9413	|44329	|2479	|1223        |
+|10	   |112	  |41422	  |1691  |1333         |
+|20	 |268	  |    	  |3128	|1699         |
+|30	 |329	|   	|9156	|3952         |
+|40	 |395	|   	|43228	|13029        |
+|50	 |507	|   	|57480	|17300        |
 
 TODO: Update the table below for PushSum and make a graph
 
@@ -51,17 +51,17 @@ On our systems, we got the following values:
 For Gossip:
 -----------
 
-1. Line:1500
-2. Full:3000
-3. 2D:5000
-4. Imp-2D:500
+1. Line: 1500
+2. Full: 3000
+3. 2D: 5000
+4. Imp-2D: 1500
 
 For Push-Sum:
 -------------
 1. Line :
-2. Full: 
-3. 2D:
-4. imp-2D:
+2. Full: 50
+3. 2D: 50
+4. imp-2D: 50
 
 NOTE: The highest values are not recorded every time we run the program.
 
