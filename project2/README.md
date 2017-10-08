@@ -40,7 +40,7 @@ We experimented with different number of nodes with different topologies keeping
 
 ![alt tag](https://github.com/akshayt80/gosip_simulator/blob/master/Picture1.png)
 
-In the above graph, we have just taken a single reading for the line topology as the rest of the node values were taking far too much time on our systems.
+In the above graph, we have just taken a single reading for the line topology as we tried testing for other larger values of nodes, due to limited resources of our systems, those larger values were taking far too much of time.
 
 In conclusion, we have implemented all the topologies along with the pushsum and gossip algorithms. 
 
