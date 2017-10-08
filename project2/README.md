@@ -42,6 +42,29 @@ TODO: Update the table below for PushSum and make a graph
 
 ## Installation
 
+# Largest Network Managed for each algorithm and topology.
+
+This may vary significantly from machine to machine.
+
+On our systems, we got the following values:
+
+For Gossip:
+-----------
+
+1. Line:1500
+2. Full:3000
+3. 2D:5000
+4. Imp-2D:500
+
+For Push-Sum:
+-------------
+1. Line :
+2. Full: 
+3. 2D:
+4. imp-2D:
+
+NOTE: The highest values are not recorded every time we run the program.
+
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed
 by adding `project2` to your list of dependencies in `mix.exs`:
 
